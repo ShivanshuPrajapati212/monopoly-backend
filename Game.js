@@ -1,10 +1,11 @@
 import { Board } from "./Board.js";
-import { INIT_GAME, INVALID, MOVE } from "./messages.js";
+import { INIT_GAME, INVALID, MOVE, RENT } from "./messages.js";
 
 function getRandomInteger(min, max) {
   min = Math.ceil(min); // Ensure min is an integer
   max = Math.floor(max); // Ensure max is an integer
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  // return Math.floor(Math.random() * (max - min + 1)) + min;
+  return 3;
 }
 
 function changePosition(number, currentPosition) {
@@ -93,6 +94,8 @@ export class Game {
           })
         );
         this.count += 1;
+        console.log("called rent check");
+        this.checkRent(this.player1.socket);
       }
       if (socket === this.player2.socket) {
         if (this.count % 2 === 0) {
@@ -129,6 +132,8 @@ export class Game {
           })
         );
         this.count += 1;
+        console.log("called rent check");
+        this.checkRent(this.player1.socket);
       }
 
       return [randomInt1, randomInt2];
@@ -144,7 +149,7 @@ export class Game {
     try {
       if (socket === this.player1.socket) {
         if (this.board.nonBuyable().includes(this.player1.position)) {
-            console.log("non buyable")
+          console.log("non buyable");
           return;
         }
         const res = this.board.buyProperty(
@@ -157,7 +162,7 @@ export class Game {
           return this.player1.socket.send(JSON.stringify(res));
         }
 
-        this.player1.money -= res.payload.cost 
+        this.player1.money -= res.payload.cost;
 
         this.player2.socket.send(JSON.stringify(res));
         this.player1.socket.send(JSON.stringify(res));
@@ -165,7 +170,7 @@ export class Game {
       }
       if (socket === this.player2.socket) {
         if (this.board.nonBuyable().includes(this.player2.position)) {
-            console.log("non buyable")
+          console.log("non buyable");
           return;
         }
         const res = this.board.buyProperty(
@@ -178,11 +183,47 @@ export class Game {
           return this.player2.socket.send(JSON.stringify(res));
         }
 
-        this.player2.money -= res.payload.cost 
+        this.player2.money -= res.payload.cost;
 
         this.player2.socket.send(JSON.stringify(res));
         this.player1.socket.send(JSON.stringify(res));
         return res;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  checkRent(socket) {
+    if (socket !== this.player1.socket && socket !== this.player2.socket) {
+      return;
+    }
+    try {
+      if (socket === this.player1.socket) {
+        const res = this.board.checkRent(this.player1, this.player1.position);
+        // TODO: What if user doesn't have money for rent.
+        if (res?.type === RENT) {
+          this.player2.money += res.payload.rent;
+          this.player1.money -= res.payload.rent;
+
+          this.player2.socket.send(JSON.stringify(res));
+          this.player1.socket.send(JSON.stringify(res));
+        }
+
+        return;
+      }
+      if (socket === this.player2.socket) {
+        const res = this.board.checkRent(this.player2, this.player2.position);
+
+        if (res?.type === RENT) {
+          this.player1.money += res.payload.rent;
+          this.player2.money -= res.payload.rent;
+
+          this.player2.socket.send(JSON.stringify(res));
+          this.player1.socket.send(JSON.stringify(res));
+        }
+
+        return;
       }
     } catch (error) {
       console.log(error);

@@ -1,4 +1,4 @@
-import { BUY, INVALID } from "./messages.js";
+import { BUY, INVALID, RENT } from "./messages.js";
 
 export class Board {
   constructor() {
@@ -30,7 +30,7 @@ export class Board {
         name: "Reading Railroad",
         ownership: [null],
         rents: [25, 50, 100, 200],
-        cost: [200],
+        cost: [200, 0 ],
       },
       {
         name: "Oriental Avenue",
@@ -70,7 +70,7 @@ export class Board {
         name: "Electric Company",
         ownership: [null],
         rents: [4, 10], // multiplier × dice roll
-        cost: [150],
+        cost: [150, 0],
       },
       {
         name: "States Avenue",
@@ -90,7 +90,7 @@ export class Board {
         name: "Pennsylvania Railroad",
         ownership: [null],
         rents: [25, 50, 100, 200],
-        cost: [200],
+        cost: [200, 0],
       },
       {
         name: "St. James Place",
@@ -147,7 +147,7 @@ export class Board {
         name: "B&O Railroad",
         ownership: [null],
         rents: [25, 50, 100, 200],
-        cost: [200],
+        cost: [200, 0],
       },
       {
         name: "Atlantic Avenue",
@@ -167,7 +167,7 @@ export class Board {
         name: "Water Works",
         ownership: [null],
         rents: [4, 10], // multiplier × dice roll
-        cost: [150],
+        cost: [150, 0],
       },
       {
         name: "Marvin Gardens",
@@ -207,7 +207,7 @@ export class Board {
         name: "Short Line Railroad",
         ownership: [null],
         rents: [25, 50, 100, 200],
-        cost: [200],
+        cost: [200, 0],
       },
       {
         name: "Chance",
@@ -275,19 +275,22 @@ export class Board {
   }
 
   checkRent(player, idx) {
-    if (this.board[idx].ownership[0] === player.socket) {
-      return "NO RENT";
-    }
+    // if (this.board[idx].ownership[0] === player.socket) {          // Causing Error
+    //   return "Player.socket if";
+    // }
     if (this.board[idx].ownership[0] === null) {
-      return "NO RENT";
+      return "ownership null if";
     }
 
     const owner = this.board[idx].ownership[0];
     const noOfHouses = this.board[idx].ownership[1];
 
     return {
-      ownerSocket: owner,
-      rent: this.board[idx].rents[noOfHouses],
+      type: RENT,
+      payload: {
+        ownerSocket: owner,
+        rent: this.board[idx].rents[noOfHouses],
+      }
     };
   }
 

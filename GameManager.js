@@ -21,34 +21,38 @@ export class GameManager{
 
     addHandler(socket){
        socket.on("message", (data) => {
-            const message = JSON.parse(data.toString());
-
-            if (message.type === INIT_GAME) {
-                if (this.pendingUser) {
-                    const game = new Game(this.pendingUser, socket);
-                    this.games.push(game);
-                    this.pendingUser = null;
-                } else {
-                    this.pendingUser = socket;
+            try {
+                const message = JSON.parse(data.toString());
+    
+                if (message.type === INIT_GAME) {
+                    if (this.pendingUser) {
+                        const game = new Game(this.pendingUser, socket);
+                        this.games.push(game);
+                        this.pendingUser = null;
+                    } else {
+                        this.pendingUser = socket;
+                    }
                 }
-            }
-
-            if (message.type === ROLL) {
-                console.log("inside roll")
-                const game = this.games.find(game => game.player1.socket === socket || game.player2.socket === socket);
-                if (game) {
-                    console.log("inside roll game")
-                    game.roll(socket);
+    
+                if (message.type === ROLL) {
+                    console.log("inside roll")
+                    const game = this.games.find(game => game.player1.socket === socket || game.player2.socket === socket);
+                    if (game) {
+                        console.log("inside roll game")
+                        game.roll(socket);
+                    }
                 }
-            }
-            if (message.type === BUY) {
-                if(!message.noOfHouses) return;
-                console.log("inside buy")
-                const game = this.games.find(game => game.player1.socket === socket || game.player2.socket === socket);
-                if (game) {
-                    console.log("inside buy game")
-                    game.buy(socket, message.noOfHouses);
+                if (message.type === BUY) {
+                    if(!message.noOfHouses) return;
+                    console.log("inside buy")
+                    const game = this.games.find(game => game.player1.socket === socket || game.player2.socket === socket);
+                    if (game) {
+                        console.log("inside buy game")
+                        game.buy(socket, message.noOfHouses);
+                    }
                 }
+            } catch (error) {
+                console.log(error)
             }
         }) 
     }
