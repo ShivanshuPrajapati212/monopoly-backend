@@ -1,0 +1,5 @@
+export const INIT_GAME = "init_game"
+export const ROLL = "roll"
+export const MOVE = "move"
+export const BUY = "buy"
+export const INVALID = "invalid"
