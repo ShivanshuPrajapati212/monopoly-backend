@@ -7,12 +7,11 @@ function getRandomInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function changePosition(number, currentPosition){
-    if(number+currentPosition>39){
-        return number + currentPosition - 40
-        
-    }
-    return number + currentPosition
+function changePosition(number, currentPosition) {
+  if (number + currentPosition > 39) {
+    return number + currentPosition - 40;
+  }
+  return number + currentPosition;
 }
 
 export class Game {
@@ -66,10 +65,13 @@ export class Game {
               payload: "not your turn",
             })
           );
-          return
+          return;
         }
 
-        this.player1.position = changePosition(randomInt1 + randomInt2, this.player1.position);
+        this.player1.position = changePosition(
+          randomInt1 + randomInt2,
+          this.player1.position
+        );
         this.player2.socket.send(
           JSON.stringify({
             type: MOVE,
@@ -102,7 +104,10 @@ export class Game {
           );
           return;
         }
-        this.player2.position = changePosition(randomInt1 + randomInt2, this.player2.position);
+        this.player2.position = changePosition(
+          randomInt1 + randomInt2,
+          this.player2.position
+        );
         this.player1.socket.send(
           JSON.stringify({
             type: MOVE,
@@ -132,14 +137,55 @@ export class Game {
     }
   }
 
-  buy(socket, noOfHouses){
+  buy(socket, noOfHouses) {
     if (socket !== this.player1.socket && socket !== this.player2.socket) {
       return;
     }
     try {
-        
+      if (socket === this.player1.socket) {
+        if (this.board.nonBuyable().includes(this.player1.position)) {
+            console.log("non buyable")
+          return;
+        }
+        const res = this.board.buyProperty(
+          this.player1,
+          this.player1.position,
+          noOfHouses
+        );
+
+        if (res.type === INVALID) {
+          return this.player1.socket.send(JSON.stringify(res));
+        }
+
+        this.player1.money -= res.payload.cost 
+
+        this.player2.socket.send(JSON.stringify(res));
+        this.player1.socket.send(JSON.stringify(res));
+        return res;
+      }
+      if (socket === this.player2.socket) {
+        if (this.board.nonBuyable().includes(this.player2.position)) {
+            console.log("non buyable")
+          return;
+        }
+        const res = this.board.buyProperty(
+          this.player2,
+          this.player2.position,
+          noOfHouses
+        );
+
+        if (res.type === INVALID) {
+          return this.player2.socket.send(JSON.stringify(res));
+        }
+
+        this.player2.money -= res.payload.cost 
+
+        this.player2.socket.send(JSON.stringify(res));
+        this.player1.socket.send(JSON.stringify(res));
+        return res;
+      }
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   }
 }

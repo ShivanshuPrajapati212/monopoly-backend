@@ -1,3 +1,5 @@
+import { BUY, INVALID } from "./messages.js";
+
 export class Board {
   constructor() {
     this.board = [
@@ -235,23 +237,40 @@ export class Board {
     return this.board;
   }
 
+  nonBuyable(){
+    return [0, 2, 4, 7, 10, 17, 20, 22, 30, 33, 36, 38];
+  }
+
   buyProperty(player, idx, noOfHouses) {
     if (this.board[idx].ownership[0] !== null) {
-      return "BAD: Already Bought";
+      return {
+        type: INVALID,
+        payload: {
+          error: "Already Bought"
+        }
+        }
     }
 
     if (
       this.board[idx].cost[0] + this.board[idx].cost[1] * noOfHouses >
       player.money
     ) {
-      return "BAD: Insufficient Money";
+      return {
+        type: INVALID,
+        payload: {
+          error: "Insufficient Money"
+        }
+        }
     }
 
     this.board[idx].ownership = [player.socket, noOfHouses];
 
     return {
-      changeInBoard: this.board[idx],
-      cost: this.board[idx].cost[0] + this.board[idx].cost[1] * noOfHouses,
+      type: BUY,
+      payload: {
+        changeInBoard: this.board[idx],
+        cost: this.board[idx].cost[0] + this.board[idx].cost[1] * noOfHouses,
+      }
     };
   }
 

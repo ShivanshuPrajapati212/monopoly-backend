@@ -47,7 +47,7 @@ export class GameManager{
                 const game = this.games.find(game => game.player1.socket === socket || game.player2.socket === socket);
                 if (game) {
                     console.log("inside buy game")
-                    game.buy(socket, noOfHouses);
+                    game.buy(socket, message.noOfHouses);
                 }
             }
         }) 
