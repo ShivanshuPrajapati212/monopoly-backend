@@ -1,11 +1,18 @@
 import { Board } from "./Board.js";
-import { INIT_GAME, INVALID, MOVE, RENT } from "./messages.js";
+import {
+  INIT_GAME,
+  INVALID,
+  MOVE,
+  PAY,
+  RECEIVE,
+  RENT,
+  SELL,
+} from "./messages.js";
 
 function getRandomInteger(min, max) {
   min = Math.ceil(min); // Ensure min is an integer
   max = Math.floor(max); // Ensure max is an integer
-  // return Math.floor(Math.random() * (max - min + 1)) + min;
-  return 3;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function changePosition(number, currentPosition) {
@@ -16,39 +23,48 @@ function changePosition(number, currentPosition) {
 }
 
 export class Game {
-  constructor(socket1, socket2) {
-    this.player1 = {
-      socket: socket1,
+  constructor(...sockets) {
+    // allow constructor(socket1, socket2, ...) or constructor([socket1, socket2, ...])
+    const socketsArr = Array.isArray(sockets[0]) ? sockets[0] : sockets;
+
+    this.players = socketsArr.map((socket, i) => ({
+      socket,
       money: 1500,
       position: 0,
-    };
-    this.player2 = {
-      socket: socket2,
-      money: 1500,
-      position: 0,
-    };
+      name: `Player ${i + 1}`,
+    }));
+
     this.board = new Board();
-    this.count = 0;
-    this.player1.socket.send(
-      JSON.stringify({
-        type: INIT_GAME,
-        payload: {
-          name: "Player 1",
-        },
-      })
-    );
-    this.player2.socket.send(
-      JSON.stringify({
-        type: INIT_GAME,
-        payload: {
-          name: "Player 2",
-        },
-      })
+    this.currentTurn = 0; // index in this.players
+
+    // notify all players
+    this.players.forEach((p) =>
+      p.socket.send(
+        JSON.stringify({
+          type: INIT_GAME,
+          payload: { name: p.name },
+        })
+      )
     );
   }
 
+  findPlayerIndexBySocket(socket) {
+    return this.players.findIndex((p) => p.socket === socket);
+  }
+
+  broadcast(obj) {
+    const msg = JSON.stringify(obj);
+    this.players.forEach((p) => p.socket.send(msg));
+  }
+
   roll(socket) {
-    if (socket !== this.player1.socket && socket !== this.player2.socket) {
+    const idx = this.findPlayerIndexBySocket(socket);
+    if (idx === -1) return;
+
+    if (idx !== this.currentTurn) {
+      this.players[idx].socket.send(
+        JSON.stringify({ type: INVALID, payload: "not your turn" })
+      );
       return;
     }
 
@@ -58,83 +74,39 @@ export class Game {
       const randomInt1 = getRandomInteger(min, max);
       const randomInt2 = getRandomInteger(min, max);
 
-      if (socket === this.player1.socket) {
-        if (this.count % 2 !== 0) {
-          this.player1.socket.send(
-            JSON.stringify({
-              type: INVALID,
-              payload: "not your turn",
-            })
-          );
-          return;
-        }
+      const player = this.players[idx];
+      if (
+        player.position >
+        changePosition(randomInt1 + randomInt2, player.position)
+      ) {
+        player.money += 200;
+        this.broadcast({
+          type: RECEIVE,
+          payload: {
+            player: player.socket,
+            amount: 200,
+          },
+        });
+      }
+      player.position = changePosition(
+        randomInt1 + randomInt2,
+        player.position
+      );
 
-        this.player1.position = changePosition(
-          randomInt1 + randomInt2,
-          this.player1.position
-        );
-        this.player2.socket.send(
-          JSON.stringify({
-            type: MOVE,
-            payload: {
-              name: "Player 1",
-              position: this.player1.position,
-              roll: [randomInt1, randomInt2],
-            },
-          })
-        );
-        this.player1.socket.send(
-          JSON.stringify({
-            type: MOVE,
-            payload: {
-              name: "Player 1",
-              position: this.player1.position,
-              roll: [randomInt1, randomInt2],
-            },
-          })
-        );
-        this.count += 1;
-        console.log("called rent check");
-        this.checkRent(this.player1.socket);
-      }
-      if (socket === this.player2.socket) {
-        if (this.count % 2 === 0) {
-          this.player2.socket.send(
-            JSON.stringify({
-              type: INVALID,
-              payload: "not your turn",
-            })
-          );
-          return;
-        }
-        this.player2.position = changePosition(
-          randomInt1 + randomInt2,
-          this.player2.position
-        );
-        this.player1.socket.send(
-          JSON.stringify({
-            type: MOVE,
-            payload: {
-              name: "Player 2",
-              position: this.player2.position,
-              roll: [randomInt1, randomInt2],
-            },
-          })
-        );
-        this.player2.socket.send(
-          JSON.stringify({
-            type: MOVE,
-            payload: {
-              name: "Player 2",
-              position: this.player2.position,
-              roll: [randomInt1, randomInt2],
-            },
-          })
-        );
-        this.count += 1;
-        console.log("called rent check");
-        this.checkRent(this.player1.socket);
-      }
+      const moveMsg = {
+        type: MOVE,
+        payload: {
+          name: player.name,
+          position: player.position,
+          roll: [randomInt1, randomInt2],
+        },
+      };
+
+      this.broadcast(moveMsg);
+      this.specialSpace(player.socket)
+
+      // advance turn
+      this.currentTurn = (this.currentTurn + 1) % this.players.length;
 
       return [randomInt1, randomInt2];
     } catch (error) {
@@ -143,90 +115,114 @@ export class Game {
   }
 
   buy(socket, noOfHouses) {
-    if (socket !== this.player1.socket && socket !== this.player2.socket) {
-      return;
+    const idx = this.findPlayerIndexBySocket(socket);
+    if (idx === -1) return;
+
+    if (
+      idx !==
+      (this.currentTurn - 1 + this.players.length) % this.players.length
+    ) {
+      // Buying usually happens immediately after your move; adapt if your flow differs.
+      // This check ensures the buyer is the player who just moved. Remove if not needed.
+      // For a simpler rule: require idx === this.currentTurn (uncomment if you want buy before advancing turn)
     }
+
     try {
-      if (socket === this.player1.socket) {
-        if (this.board.nonBuyable().includes(this.player1.position)) {
-          console.log("non buyable");
-          return;
-        }
-        const res = this.board.buyProperty(
-          this.player1,
-          this.player1.position,
-          noOfHouses
+      const player = this.players[idx];
+
+      if (this.board.nonBuyable().includes(player.position)) {
+        player.socket.send(
+          JSON.stringify({ type: INVALID, payload: "non buyable" })
         );
+        return;
+      }
 
-        if (res.type === INVALID) {
-          return this.player1.socket.send(JSON.stringify(res));
-        }
+      const res = this.board.buyProperty(player, player.position, noOfHouses);
 
-        this.player1.money -= res.payload.cost;
-
-        this.player2.socket.send(JSON.stringify(res));
-        this.player1.socket.send(JSON.stringify(res));
+      if (res.type === INVALID) {
+        player.socket.send(JSON.stringify(res));
         return res;
       }
-      if (socket === this.player2.socket) {
-        if (this.board.nonBuyable().includes(this.player2.position)) {
-          console.log("non buyable");
-          return;
-        }
-        const res = this.board.buyProperty(
-          this.player2,
-          this.player2.position,
-          noOfHouses
-        );
 
-        if (res.type === INVALID) {
-          return this.player2.socket.send(JSON.stringify(res));
-        }
-
-        this.player2.money -= res.payload.cost;
-
-        this.player2.socket.send(JSON.stringify(res));
-        this.player1.socket.send(JSON.stringify(res));
-        return res;
-      }
+      // deduct cost and broadcast update
+      player.money -= res.payload.cost;
+      this.broadcast(res);
+      return res;
     } catch (error) {
       console.log(error);
     }
   }
 
   checkRent(socket) {
-    if (socket !== this.player1.socket && socket !== this.player2.socket) {
-      return;
-    }
+    const idx = this.findPlayerIndexBySocket(socket);
+    if (idx === -1) return;
+
     try {
-      if (socket === this.player1.socket) {
-        const res = this.board.checkRent(this.player1, this.player1.position);
-        // TODO: What if user doesn't have money for rent.
-        if (res?.type === RENT) {
-          this.player2.money += res.payload.rent;
-          this.player1.money -= res.payload.rent;
+      const player = this.players[idx];
+      const res = this.board.checkRent(player, player.position);
+      if (!res) return;
 
-          this.player2.socket.send(JSON.stringify(res));
-          this.player1.socket.send(JSON.stringify(res));
-        }
-
-        return;
+      // find owner player object
+      const ownerIdx = this.players.findIndex(
+        (p) => p.socket === res.payload.ownerSocket
+      );
+      if (ownerIdx !== -1) {
+        player.money -= res.payload.rent;
+        this.players[ownerIdx].money += res.payload.rent;
       }
-      if (socket === this.player2.socket) {
-        const res = this.board.checkRent(this.player2, this.player2.position);
 
-        if (res?.type === RENT) {
-          this.player1.money += res.payload.rent;
-          this.player2.money -= res.payload.rent;
-
-          this.player2.socket.send(JSON.stringify(res));
-          this.player1.socket.send(JSON.stringify(res));
-        }
-
-        return;
-      }
+      this.broadcast(res);
+      return res;
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // sell a property at board index `idx` for the player who invoked the action
+  sell(socket, idx, noOfHouses) {
+    const pIdx = this.findPlayerIndexBySocket(socket);
+    if (pIdx === -1) return;
+
+    try {
+      const player = this.players[pIdx];
+
+      const res = this.board.sellProperty(player, idx, noOfHouses);
+
+      if (res.type === INVALID) {
+        player.socket.send(JSON.stringify(res));
+        return res;
+      }
+
+      // credit amount to player and broadcast
+      player.money += res.payload.amount;
+      this.broadcast(res);
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  specialSpace(socket) {
+    const pIdx = this.findPlayerIndexBySocket(socket);
+    if (pIdx === -1) return;
+
+    try {
+      const player = this.players[pIdx];
+
+      const res = this.board.checkSpecialSpace(player, player.position);
+
+      if (!res.type) {
+        return;
+      }
+      if (res.type === RECEIVE) {
+        player.money += res.payload.amount;
+        this.broadcast(res);
+        return;
+      }
+      if (res.type === PAY) {
+        player.money -= res.payload.amount;
+        this.broadcast(res);
+        return;
+      }
+    } catch (error) {}
   }
 }

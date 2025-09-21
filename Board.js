@@ -1,4 +1,4 @@
-import { BUY, INVALID, RENT } from "./messages.js";
+import { BUY, INVALID, PAY, RECEIVE, RENT, SELL } from "./messages.js";
 
 export class Board {
   constructor() {
@@ -30,7 +30,7 @@ export class Board {
         name: "Reading Railroad",
         ownership: [null],
         rents: [25, 50, 100, 200],
-        cost: [200, 0 ],
+        cost: [200, 0],
       },
       {
         name: "Oriental Avenue",
@@ -237,7 +237,7 @@ export class Board {
     return this.board;
   }
 
-  nonBuyable(){
+  nonBuyable() {
     return [0, 2, 4, 7, 10, 17, 20, 22, 30, 33, 36, 38];
   }
 
@@ -246,9 +246,9 @@ export class Board {
       return {
         type: INVALID,
         payload: {
-          error: "Already Bought"
-        }
-        }
+          error: "Already Bought",
+        },
+      };
     }
 
     if (
@@ -258,9 +258,9 @@ export class Board {
       return {
         type: INVALID,
         payload: {
-          error: "Insufficient Money"
-        }
-        }
+          error: "Insufficient Money",
+        },
+      };
     }
 
     this.board[idx].ownership = [player.socket, noOfHouses];
@@ -270,39 +270,60 @@ export class Board {
       payload: {
         changeInBoard: this.board[idx],
         cost: this.board[idx].cost[0] + this.board[idx].cost[1] * noOfHouses,
-      }
+      },
     };
   }
 
   checkRent(player, idx) {
-    // if (this.board[idx].ownership[0] === player.socket) {          // Causing Error
-    //   return "Player.socket if";
-    // }
-    if (this.board[idx].ownership[0] === null) {
-      return "ownership null if";
+    // No ownership information or unowned -> no rent
+    if (!this.board[idx].ownership || this.board[idx].ownership[0] === null) {
+      return null;
+    }
+
+    // If the player landing is the owner, no rent
+    if (this.board[idx].ownership[0] === player.socket) {
+      return null;
     }
 
     const owner = this.board[idx].ownership[0];
-    const noOfHouses = this.board[idx].ownership[1];
+    const noOfHouses = this.board[idx].ownership[1] || 0;
 
     return {
       type: RENT,
       payload: {
         ownerSocket: owner,
         rent: this.board[idx].rents[noOfHouses],
-      }
+      },
     };
   }
 
   sellProperty(player, idx, noOfHouses) {
-    if (this.board[idx].ownership[0] !== player.socket) {
-      return "BAD: Not your property";
+    if (
+      !this.board[idx].ownership ||
+      this.board[idx].ownership[0] !== player.socket
+    ) {
+      return {
+        type: INVALID,
+        payload: {
+          error: "Not your Property",
+        },
+      };
     }
     if (noOfHouses > this.board[idx].ownership[1]) {
-      return "BAD: Not many Houses";
+      return {
+        type: INVALID,
+        payload: {
+          error: "Not many houses",
+        },
+      };
     }
     if (noOfHouses < 0) {
-      return "BAD: Not many Houses";
+      return {
+        type: INVALID,
+        payload: {
+          error: "Not many houses",
+        },
+      };
     }
 
     if (noOfHouses === 0) {
@@ -310,27 +331,48 @@ export class Board {
       this.board[idx].ownership[1] = 0;
 
       return {
-        amount: this.board[idx].cost[0] / 2,
+        type: SELL,
+        payload: {
+          amount: this.board[idx].cost[0] / 2,
+        },
       };
     }
     this.board[idx].ownership[1] = this.board[idx].ownership[1] - noOfHouses;
 
     return {
-      amount: (this.board[idx].cost[1] / 2) * noOfHouses,
+      type: SELL,
+      payload: {
+        amount: (this.board[idx].cost[1] / 2) * noOfHouses,
+      },
     };
   }
+
+  checkSpecialSpace(player, idx) {
+    if (this.board[idx].ownership || this.board[idx].ownership[0] !== null) {
+      return null;
+    }
+    if (!this.nonBuyable().includes(idx)) {
+      return null;
+    }
+    if (this.nonBuyable().indexOf(idx) === 4) {
+      return {
+        type: PAY,
+        payload: {
+          player: player.socket,
+          amount: 200,
+        },
+      };
+    }
+    else if (this.nonBuyable().indexOf(idx) === 38) {
+      return {
+        type: PAY,
+        payload: {
+          player: player.socket,
+          amount: 75,
+        },
+      };
+    }
+
+    return;
+  }
 }
-
-// const board = new Board();
-
-// console.log(
-//   board.buyProperty({ socket: "himanshu", money: 1500, position: 0 }, 39, 2)
-// );
-// console.log(
-//   board.checkRent({ socket: "shivanshu", money: 1500, position: 0 }, 39)
-// );
-// console.log(
-//   board.sellProperty({ socket: "himanshu", money: 1500, position: 0 }, 39, 0)
-// );
-
-// console.log(board.getBoard()[39]);
