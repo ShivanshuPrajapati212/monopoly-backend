@@ -225,4 +225,11 @@ export class Game {
       }
     } catch (error) {}
   }
+  getBoard(socket) {
+     const idx = this.findPlayerIndexBySocket(socket);
+    if (idx === -1) return;
+    
+    this.players[idx].socket.send(JSON.stringify(this.board.getBoard()))
+    return;
+  }
 }

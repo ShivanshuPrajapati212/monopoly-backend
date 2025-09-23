@@ -1,4 +1,4 @@
-import { BUY, INVALID, PAY, RECEIVE, RENT, SELL } from "./messages.js";
+import { BUY, GET_BOARD, INVALID, PAY, RECEIVE, RENT, SELL } from "./messages.js";
 
 export class Board {
   constructor() {
@@ -234,7 +234,10 @@ export class Board {
 
   // return the board array
   getBoard() {
-    return this.board;
+    return {
+      type: GET_BOARD,
+      payload: this.board,
+    };;
   }
 
   nonBuyable() {
@@ -373,6 +376,12 @@ export class Board {
       };
     }
 
-    return;
+    return {
+        type: PAY,
+        payload: {
+          player: player.socket,
+          amount: 75,
+        },
+      };
   }
 }
