@@ -324,7 +324,7 @@ export class Board {
       };
     }
 
-    this.board[idx].ownership = [player.socket, noOfHouses];
+    this.board[idx].ownership = [player.name, noOfHouses];
 
     return {
       type: BUY,
@@ -342,7 +342,7 @@ export class Board {
     }
 
     // If the player landing is the owner, no rent
-    if (this.board[idx].ownership[0] === player.socket) {
+    if (this.board[idx].ownership[0] === player.name) {
       return null;
     }
 
@@ -352,7 +352,8 @@ export class Board {
     return {
       type: RENT,
       payload: {
-        ownerSocket: owner,
+        name: player.name,
+        ownerName: owner,
         rent: this.board[idx].rents[noOfHouses],
       },
     };
@@ -361,7 +362,7 @@ export class Board {
   sellProperty(player, idx, noOfHouses) {
     if (
       !this.board[idx].ownership ||
-      this.board[idx].ownership[0] !== player.socket
+      this.board[idx].ownership[0] !== player.name
     ) {
       return {
         type: INVALID,
@@ -419,7 +420,7 @@ export class Board {
       return {
         type: PAY,
         payload: {
-          player: player.socket,
+          name: player.name,
           amount: 200,
         },
       };
@@ -428,7 +429,7 @@ export class Board {
       return {
         type: PAY,
         payload: {
-          player: player.socket,
+          name: player.name,
           amount: 75,
         },
       };
@@ -437,7 +438,7 @@ export class Board {
     return {
         type: PAY,
         payload: {
-          player: player.socket,
+          name: player.name,
           amount: 75,
         },
       };

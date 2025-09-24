@@ -13,7 +13,8 @@ import {
 function getRandomInteger(min, max) {
   min = Math.ceil(min); // Ensure min is an integer
   max = Math.floor(max); // Ensure max is an integer
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  // return Math.floor(Math.random() * (max - min + 1)) + min;
+  return 6;
 }
 
 function changePosition(number, currentPosition) {
@@ -84,7 +85,7 @@ export class Game {
         this.broadcast({
           type: RECEIVE,
           payload: {
-            player: player.socket,
+            name: player.name,
             amount: 200,
           },
         });
@@ -165,7 +166,7 @@ export class Game {
 
       // find owner player object
       const ownerIdx = this.players.findIndex(
-        (p) => p.socket === res.payload.ownerSocket
+        (p) => p.name === res.payload.ownerName
       );
       if (ownerIdx !== -1) {
         player.money -= res.payload.rent;
