@@ -1,5 +1,5 @@
 import { Game } from "./Game.js";
-import { BUY, GET_BOARD, GET_PLAYERS, INIT_GAME, ROLL, SELL } from "./messages.js";
+import { BUY, GET_BOARD, GET_PLAYERS, GET_SELF, INIT_GAME, ROLL, SELL } from "./messages.js";
 
 
 export class GameManager{
@@ -61,6 +61,10 @@ export class GameManager{
                     if (message.type === GET_PLAYERS) {
                         const game = this.games.find(g => g.players.some(p => p.socket === socket));
                         if (game) game.getPlayers(socket)
+                    }
+                    if (message.type === GET_SELF) {
+                        const game = this.games.find(g => g.players.some(p => p.socket === socket));
+                        if (game) game.getSelf(socket)
                     }
             } catch (error) {
                 console.log(error)

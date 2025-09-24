@@ -1,6 +1,7 @@
 import { Board } from "./Board.js";
 import {
   GET_PLAYERS,
+  GET_SELF,
   INIT_GAME,
   INVALID,
   MOVE,
@@ -243,6 +244,16 @@ export class Game {
     this.players[idx].socket.send(JSON.stringify({
         type: GET_PLAYERS,
         payload: this.players,
+      }))
+    return;
+  }
+  getSelf(socket){
+    const idx = this.findPlayerIndexBySocket(socket);
+    if (idx === -1) return;
+    
+    this.players[idx].socket.send(JSON.stringify({
+        type: GET_SELF,
+        payload: this.players[idx].name,
       }))
     return;
   }

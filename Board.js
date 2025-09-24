@@ -14,12 +14,12 @@ export class Board {
     ownership: [null, 0],
     rents: [2, 10, 30, 90, 160, 250],
     cost: [60, 50],
-    color: "Brown",
+    color: "bg-amber-900",
   },
   {
     id: 2,
     name: "Community Chest",
-    color: "Cyan",
+    color: "bg-cyan-300",
   },
   {
     id: 3,
@@ -27,12 +27,12 @@ export class Board {
     ownership: [null, 0],
     rents: [4, 20, 60, 180, 320, 450],
     cost: [60, 50],
-    color: "Brown",
+    color: "bg-amber-900",
   },
   {
     id: 4,
     name: "Income Tax",
-    color: "Dark Red",
+    color: "Dark bg-red-400",
   },
   {
     id: 5,
@@ -40,7 +40,7 @@ export class Board {
     ownership: [null],
     rents: [25, 50, 100, 200],
     cost: [200, 0],
-    color: "Black",
+    color: "bg-black",
   },
   {
     id: 6,
@@ -48,12 +48,12 @@ export class Board {
     ownership: [null, 0],
     rents: [6, 30, 90, 270, 400, 550],
     cost: [100, 50],
-    color: "Light Blue",
+    color: "bg-sky-400",
   },
   {
     id: 7,
     name: "Chance",
-    color: "Orange",
+    color: "bg-orange-400",
   },
   {
     id: 8,
@@ -61,7 +61,7 @@ export class Board {
     ownership: [null, 0],
     rents: [6, 30, 90, 270, 400, 550],
     cost: [100, 50],
-    color: "Light Blue",
+    color: "bg-sky-400",
   },
   {
     id: 9,
@@ -69,7 +69,7 @@ export class Board {
     ownership: [null, 0],
     rents: [8, 40, 100, 300, 450, 600],
     cost: [120, 50],
-    color: "Light Blue",
+    color: "bg-sky-400",
   },
   {
     id: 10,
@@ -82,7 +82,7 @@ export class Board {
     ownership: [null, 0],
     rents: [10, 50, 150, 450, 625, 750],
     cost: [140, 100],
-    color: "Pink",
+    color: "bg-pink-400",
   },
   {
     id: 12,
@@ -90,7 +90,7 @@ export class Board {
     ownership: [null],
     rents: [4, 10], // multiplier × dice roll
     cost: [150, 0],
-    color: "Black",
+    color: "bg-black",
   },
   {
     id: 13,
@@ -98,7 +98,7 @@ export class Board {
     ownership: [null, 0],
     rents: [10, 50, 150, 450, 625, 750],
     cost: [140, 100],
-    color: "Pink",
+    color: "bg-pink-400",
   },
   {
     id: 14,
@@ -106,7 +106,7 @@ export class Board {
     ownership: [null, 0],
     rents: [12, 60, 180, 500, 700, 900],
     cost: [160, 100],
-    color: "Pink",
+    color: "bg-pink-400",
   },
   {
     id: 15,
@@ -114,7 +114,7 @@ export class Board {
     ownership: [null],
     rents: [25, 50, 100, 200],
     cost: [200, 0],
-    color: "Black",
+    color: "bg-black",
   },
   {
     id: 16,
@@ -122,12 +122,12 @@ export class Board {
     ownership: [null, 0],
     rents: [14, 70, 200, 550, 750, 950],
     cost: [180, 100],
-    color: "Orange",
+    color: "bg-orange-400",
   },
   {
     id: 17,
     name: "Community Chest",
-    color: "Cyan",
+    color: "bg-cyan-300",
   },
   {
     id: 18,
@@ -135,7 +135,7 @@ export class Board {
     ownership: [null, 0],
     rents: [14, 70, 200, 550, 750, 950],
     cost: [180, 100],
-    color: "Orange",
+    color: "bg-orange-400",
   },
   {
     id: 19,
@@ -143,12 +143,12 @@ export class Board {
     ownership: [null, 0],
     rents: [16, 80, 220, 600, 800, 1000],
     cost: [200, 100],
-    color: "Orange",
+    color: "bg-orange-400",
   },
   {
     id: 20,
     name: "Free Parking",
-    color: "Green",
+    color: "bg-green-500",
   },
   {
     id: 21,
@@ -156,12 +156,12 @@ export class Board {
     ownership: [null, 0],
     rents: [18, 90, 250, 700, 875, 1050],
     cost: [220, 150],
-    color: "Red",
+    color: "bg-red-400",
   },
   {
     id: 22,
     name: "Chance",
-    color: "Orange",
+    color: "bg-orange-400",
   },
   {
     id: 23,
@@ -169,7 +169,7 @@ export class Board {
     ownership: [null, 0],
     rents: [18, 90, 250, 700, 875, 1050],
     cost: [220, 150],
-    color: "Red",
+    color: "bg-red-400",
   },
   {
     id: 24,
@@ -177,7 +177,7 @@ export class Board {
     ownership: [null, 0],
     rents: [20, 100, 300, 750, 925, 1100],
     cost: [240, 150],
-    color: "Red",
+    color: "bg-red-400",
   },
   {
     id: 25,
@@ -185,7 +185,7 @@ export class Board {
     ownership: [null],
     rents: [25, 50, 100, 200],
     cost: [200, 0],
-    color: "Black",
+    color: "bg-black",
   },
   {
     id: 26,
@@ -193,7 +193,7 @@ export class Board {
     ownership: [null, 0],
     rents: [22, 110, 330, 800, 975, 1150],
     cost: [260, 150],
-    color: "Yellow",
+    color: "bg-yellow-300",
   },
   {
     id: 27,
@@ -201,7 +201,7 @@ export class Board {
     ownership: [null, 0],
     rents: [22, 110, 330, 800, 975, 1150],
     cost: [260, 150],
-    color: "Yellow",
+    color: "bg-yellow-300",
   },
   {
     id: 28,
@@ -209,7 +209,7 @@ export class Board {
     ownership: [null],
     rents: [4, 10], // multiplier × dice roll
     cost: [150, 0],
-    color: "Black",
+    color: "bg-black",
   },
   {
     id: 29,
@@ -217,7 +217,7 @@ export class Board {
     ownership: [null, 0],
     rents: [24, 120, 360, 850, 1025, 1200],
     cost: [280, 150],
-    color: "Yellow",
+    color: "bg-yellow-300",
   },
   {
     id: 30,
@@ -230,7 +230,7 @@ export class Board {
     ownership: [null, 0],
     rents: [26, 130, 390, 900, 1100, 1275],
     cost: [300, 200],
-    color: "Green",
+    color: "bg-green-500",
   },
   {
     id: 32,
@@ -238,12 +238,12 @@ export class Board {
     ownership: [null, 0],
     rents: [26, 130, 390, 900, 1100, 1275],
     cost: [300, 200],
-    color: "Green",
+    color: "bg-green-500",
   },
   {
     id: 33,
     name: "Community Chest",
-    color: "Cyan",
+    color: "bg-cyan-300",
   },
   {
     id: 34,
@@ -251,7 +251,7 @@ export class Board {
     ownership: [null, 0],
     rents: [28, 150, 450, 1000, 1200, 1400],
     cost: [320, 200],
-    color: "Green",
+    color: "bg-green-500",
   },
   {
     id: 35,
@@ -259,12 +259,12 @@ export class Board {
     ownership: [null],
     rents: [25, 50, 100, 200],
     cost: [200, 0],
-    color: "Black",
+    color: "bg-black",
   },
   {
     id: 36,
     name: "Chance",
-    color: "Orange",
+    color: "bg-orange-400",
   },
   {
     id: 37,
@@ -272,12 +272,12 @@ export class Board {
     ownership: [null, 0],
     rents: [35, 175, 500, 1100, 1300, 1500],
     cost: [350, 200],
-    color: "Dark Blue",
+    color: "bg-blue-800",
   },
   {
     id: 38,
     name: "Luxury Tax",
-    color: "Dark Red",
+    color: "Dark bg-red-400",
   },
   {
     id: 39,
@@ -285,7 +285,7 @@ export class Board {
     ownership: [null, 0],
     rents: [50, 200, 600, 1400, 1700, 2000],
     cost: [400, 200],
-    color: "Dark Blue",
+    color: "bg-blue-800",
   },
 ];
   }
