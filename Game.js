@@ -14,7 +14,7 @@ function getRandomInteger(min, max) {
   min = Math.ceil(min); // Ensure min is an integer
   max = Math.floor(max); // Ensure max is an integer
   // return Math.floor(Math.random() * (max - min + 1)) + min;
-  return 6;
+  return 2;
 }
 
 function changePosition(number, currentPosition) {
@@ -225,7 +225,9 @@ export class Game {
         this.broadcast(res);
         return;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   }
   getBoard(socket) {
      const idx = this.findPlayerIndexBySocket(socket);

@@ -410,13 +410,11 @@ export class Board {
   }
 
   checkSpecialSpace(player, idx) {
-    if (this.board[idx].ownership || this.board[idx].ownership[0] !== null) {
-      return null;
-    }
-    if (!this.nonBuyable().includes(idx)) {
-      return null;
-    }
-    if (this.nonBuyable().indexOf(idx) === 4) {
+    // Only handle special (non-buyable) spaces here.
+    if (!this.nonBuyable().includes(idx)) return null;
+
+    // Income Tax (usually index 4) — charge player
+    if (idx === 4) {
       return {
         type: PAY,
         payload: {
@@ -425,7 +423,9 @@ export class Board {
         },
       };
     }
-    else if (this.nonBuyable().indexOf(idx) === 38) {
+
+    // Luxury Tax (usually index 38) — charge player
+    if (idx === 38) {
       return {
         type: PAY,
         payload: {
@@ -435,12 +435,8 @@ export class Board {
       };
     }
 
-    return {
-        type: PAY,
-        payload: {
-          name: player.name,
-          amount: 75,
-        },
-      };
+    // Other non-buyable squares (GO, Chance, Community Chest, Jail, Free Parking, Go to Jail)
+    // are handled elsewhere (cards, game logic) — nothing to do here by default.
+    return null;
   }
 }
