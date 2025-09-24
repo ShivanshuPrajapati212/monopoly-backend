@@ -14,8 +14,8 @@ import {
 function getRandomInteger(min, max) {
   min = Math.ceil(min); // Ensure min is an integer
   max = Math.floor(max); // Ensure max is an integer
-  // return Math.floor(Math.random() * (max - min + 1)) + min;
-  return 2;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+  // return 2;
 }
 
 function changePosition(number, currentPosition) {
@@ -213,7 +213,7 @@ export class Game {
 
       const res = this.board.checkSpecialSpace(player, player.position);
 
-      if (!res.type) {
+      if (res === null || !res.type) {
         return;
       }
       if (res.type === RECEIVE) {

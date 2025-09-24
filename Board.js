@@ -38,8 +38,8 @@ export class Board {
     id: 5,
     name: "Indian Railways",
     ownership: [null],
-    rents: [25, 50, 100, 200],
-    cost: [200, 0],
+    rents: [25, 50, 100, 200, 250, 300],
+    cost: [200, 50],
     color: "bg-black",
   },
   {
@@ -88,8 +88,8 @@ export class Board {
     id: 12,
     name: "Electric Company",
     ownership: [null],
-    rents: [4, 10], // multiplier × dice roll
-    cost: [150, 0],
+    rents: [40, 80, 120, 160, 200, 240], // multiplier × dice roll
+    cost: [150, 50],
     color: "bg-black",
   },
   {
@@ -112,8 +112,8 @@ export class Board {
     id: 15,
     name: "Eastern Railways",
     ownership: [null],
-    rents: [25, 50, 100, 200],
-    cost: [200, 0],
+    rents: [25, 50, 100, 200, 250, 300],
+    cost: [200, 50],
     color: "bg-black",
   },
   {
@@ -183,8 +183,8 @@ export class Board {
     id: 25,
     name: "Western Railways",
     ownership: [null],
-    rents: [25, 50, 100, 200],
-    cost: [200, 0],
+    rents: [25, 50, 100, 200, 250, 300],
+    cost: [200, 50],
     color: "bg-black",
   },
   {
@@ -207,8 +207,8 @@ export class Board {
     id: 28,
     name: "Water Works",
     ownership: [null],
-    rents: [4, 10], // multiplier × dice roll
-    cost: [150, 0],
+    rents: [40, 80, 120, 160, 200, 240], // multiplier × dice roll
+    cost: [150, 50],
     color: "bg-black",
   },
   {
@@ -257,8 +257,8 @@ export class Board {
     id: 35,
     name: "Southern Railways",
     ownership: [null],
-    rents: [25, 50, 100, 200],
-    cost: [200, 0],
+    rents: [25, 50, 100, 200, 250, 300],
+    cost: [200, 50],
     color: "bg-black",
   },
   {
