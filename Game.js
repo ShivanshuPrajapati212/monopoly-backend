@@ -15,7 +15,7 @@ function getRandomInteger(min, max) {
   min = Math.ceil(min); // Ensure min is an integer
   max = Math.floor(max); // Ensure max is an integer
   return Math.floor(Math.random() * (max - min + 1)) + min;
-  // return 2;
+  // return 4;
 }
 
 function changePosition(number, currentPosition) {
@@ -107,6 +107,7 @@ export class Game {
 
       this.broadcast(moveMsg);
       this.specialSpace(player.socket)
+      this.checkRent(player.socket)
 
       // advance turn
       this.currentTurn = (this.currentTurn + 1) % this.players.length;
