@@ -32,7 +32,7 @@ export class Board {
   {
     id: 4,
     name: "Income Tax",
-    color: "Dark bg-red-400",
+    color: "bg-red-400",
   },
   {
     id: 5,
@@ -74,7 +74,7 @@ export class Board {
   {
     id: 10,
     name: "Jail / Just Visiting",
-    color: "Grey",
+    color: "bg-gray-700",
   },
   {
     id: 11,
@@ -222,7 +222,7 @@ export class Board {
   {
     id: 30,
     name: "Go to Jail",
-    color: "Grey",
+    color: "bg-gray-700",
   },
   {
     id: 31,
@@ -277,7 +277,7 @@ export class Board {
   {
     id: 38,
     name: "Luxury Tax",
-    color: "Dark bg-red-400",
+    color: "bg-red-400",
   },
   {
     id: 39,
@@ -329,6 +329,7 @@ export class Board {
     return {
       type: BUY,
       payload: {
+        player: player.name,
         changeInBoard: this.board[idx],
         cost: this.board[idx].cost[0] + this.board[idx].cost[1] * noOfHouses,
       },
